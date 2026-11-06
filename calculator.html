@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project Estimator - Social Orbit</title>
+  <meta name="description" content="Estimate a Social Orbit production, marketing or digital project with a simple interactive calculator.">
+  <link rel="icon" href="assets/images/social-orbit-mark.png">
+  <link rel="stylesheet" href="assets/css/styles.css?v=agency-font-pack-3">
+</head>
+<body>
+  <div data-chrome></div>
+  <main>
+    <section class="subhero" style="--hero-image:url('../images/web-development.jpg')">
+      <span class="tag reveal"><i></i>Project estimator</span>
+      <h1 class="reveal">Project your creative push.</h1>
+      <p class="reveal">A quick planning tool inspired by the reference site's calculator flow, adapted for Social Orbit campaigns and production launches.</p>
+      <div class="landing-visual reveal" aria-hidden="true">
+        <div class="landing-visual__frame landing-visual__frame--main"><img src="assets/images/web-development.jpg" alt=""></div>
+        <div class="landing-visual__frame landing-visual__frame--secondary"><img src="assets/images/brand-strategy.jpg" alt=""></div>
+        <div class="landing-visual__info"><span>Planning Tool</span><strong>Budget | Reach | ROI</strong><small>Estimate before production begins.</small></div>
+        <div class="landing-visual__film"><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </section>
+
+    <section class="section" data-estimator>
+      <div class="wrap">
+        <div class="section-head">
+          <div><span class="eyebrow">Estimator - S.O</span><h2>Numbers before the first frame.</h2></div>
+          <p>Use this as a conversation starter for campaign spend, lead volume and project potential. Final scope depends on concept, production days, post complexity and delivery formats.</p>
+        </div>
+        <div class="calc-grid">
+          <div class="calc-panel reveal">
+            <div class="calc-field">
+              <label class="calc-label"><span>Campaign / production budget</span><strong class="calc-value" data-output="budget">INR 0</strong></label>
+              <input class="range" data-input="budget" type="range" min="50000" max="1500000" step="25000" value="250000">
+            </div>
+            <div class="calc-field">
+              <label class="calc-label"><span>Expected conversion rate</span><strong class="calc-value" data-output="conversion">0%</strong></label>
+              <input class="range" data-input="conversion" type="range" min="1" max="12" step=".5" value="4">
+            </div>
+            <div class="calc-field">
+              <label class="calc-label"><span>Average customer value</span><strong class="calc-value" data-output="value">INR 0</strong></label>
+              <input class="range" data-input="value" type="range" min="2500" max="150000" step="2500" value="25000">
+            </div>
+          </div>
+          <div class="calc-panel reveal">
+            <div class="calc-result">
+              <div class="result-metric"><div class="v" data-output="leads">0</div><div class="l">Estimated enquiries</div></div>
+              <div class="result-metric"><div class="v" data-output="roi">0%</div><div class="l">Projected return</div></div>
+              <div class="result-metric result-metric--wide"><div class="v" data-output="revenue">INR 0</div><div class="l">Projected revenue influenced by campaign</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--cream">
+      <div class="wrap">
+        <div class="grid grid--3">
+          <article class="value reveal"><div class="kicker">Production scope</div><h3>Concept, shoot and crew.</h3><p>Budgets shift based on locations, crew size, cast, equipment, art, travel and shoot days.</p></article>
+          <article class="value reveal"><div class="kicker">Post scope</div><h3>Edit, VFX, grade and delivery.</h3><p>Finishing varies by revisions, visual effects, CGI, motion graphics and format versions.</p></article>
+          <article class="value reveal"><div class="kicker">Digital scope</div><h3>Launch assets and automation.</h3><p>Campaigns can include reels, ad variants, web landing pages, enquiry flows and AI support.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="wrap">
+        <h2>Want a real quote?</h2>
+        <p>Send the project details and we will map the right production, post or digital scope.</p>
+        <div class="cta-row">
+          <a class="btn btn--primary" href="contact.html">Send Enquiry <span class="arrow">&rarr;</span></a>
+          <a class="btn btn--ghost" href="services.html">View Services</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div data-footer></div>
+  <script src="assets/js/site.js"></script>
+</body>
+</html>
