@@ -741,6 +741,7 @@
     if (!open || !menu) return;
 
     const setOpen = (value) => {
+      if (!value && menu.contains(document.activeElement)) open.focus();
       body.classList.toggle("menu-open", value);
       open.setAttribute("aria-expanded", String(value));
       menu.setAttribute("aria-hidden", String(!value));
