@@ -20,7 +20,7 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 405, { error: "Method not allowed." });
   }
 
-  if (!process.env.OPENAI_API_KEY) {
+  if (!process.env.GEMINI_API_KEY) {
     return sendJson(res, 503, { error: "The AI assistant is not configured yet. Please contact our team by Email or WhatsApp." });
   }
 
@@ -42,41 +42,52 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const response = await fetch("https://api.openai.com/v1/responses", {
+    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/interactions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "x-goog-api-key": process.env.GEMINI_API_KEY,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
-        instructions,
-        input: messages.map(({ role, content }) => ({ role, content })),
-        max_output_tokens: 350
+        model: process.env.GEMINI_MODEL || "gemini-4-hydrogen",
+        input: messages.map(({ role, content }) => ({
+          type: role === "user" ? "user_input" : "model_output",
+          content: [{ type: "text", text: content }]
+        })),
+        system_instruction: instructions,
+        generation_config: {
+          thinking_level: "minimal",
+          max_output_tokens: 350
+        },
+        store: false
       })
     });
 
     if (!response.ok) {
-      console.error("OpenAI chat request failed with status:", response.status);
-      return sendJson(res, 502, { error: "I couldn't get a reply just now. Please try again or contact our team by Email or WhatsApp." });
+      console.error("Gemini chat request failed with status:", response.status);
+      if (response.status === 429) {
+        return sendJson(res, 429, { error: "Bharat AI has reached its current Gemini usage limit. Please try again later." });
+      }
+      return sendJson(res, 503, { error: "Bharat AI is temporarily unavailable. Please try again or contact our team by Email or WhatsApp." });
     }
 
     const result = await response.json();
-    const reply = result.output
-      ?.flatMap((item) => item.content || [])
-      .filter((item) => item.type === "output_text")
+    const reply = result.steps
+      ?.filter((step) => step.type === "model_output")
+      .flatMap((step) => step.content || [])
+      .filter((item) => item.type === "text" && typeof item.text === "string")
       .map((item) => item.text)
       .join("")
       .trim();
 
     if (!reply) {
-      console.error("OpenAI chat response did not contain text.");
-      return sendJson(res, 502, { error: "I couldn't get a reply just now. Please try again or contact our team by Email or WhatsApp." });
+      console.error("Gemini chat response did not contain text.");
+      return sendJson(res, 503, { error: "Bharat AI couldn't produce a reply just now. Please try again or contact our team by Email or WhatsApp." });
     }
 
     return sendJson(res, 200, { reply });
   } catch (error) {
-    console.error("OpenAI chat request error:", error);
-    return sendJson(res, 502, { error: "I couldn't connect just now. Please try again or contact our team by Email or WhatsApp." });
+    console.error("Gemini chat request error:", error);
+    return sendJson(res, 503, { error: "Bharat AI couldn't connect just now. Please try again or contact our team by Email or WhatsApp." });
   }
 };
