@@ -755,6 +755,16 @@
     menu.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => setOpen(false)));
   }
 
+  function initFooterNavigation() {
+    const footer = document.querySelector(".foot");
+    if (!footer) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      body.classList.toggle("footer-visible", entry.isIntersecting);
+    });
+    observer.observe(footer);
+  }
+
   function initReveal() {
     const items = document.querySelectorAll(".reveal");
     if (!items.length) return;
@@ -882,6 +892,7 @@
   initCursor();
   initProgress();
   initMenu();
+  initFooterNavigation();
   initReveal();
   initCounters();
   initMagnetic();

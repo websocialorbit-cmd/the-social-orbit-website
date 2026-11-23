@@ -4035,7 +4035,29 @@ img {
   }
 
   .foot__bottom {
+    margin-top: 12px;
     flex-direction: column;
+  }
+
+  .foot {
+    padding-bottom: 0;
+  }
+
+  .foot__top {
+    padding-bottom: 0;
+  }
+
+  .foot__word {
+    margin-top: 12px;
+  }
+
+  body.footer-visible .live,
+  body.footer-visible .nav {
+    pointer-events: none;
+  }
+
+  body.footer-visible .nav__burger {
+    pointer-events: auto;
   }
 }
 
