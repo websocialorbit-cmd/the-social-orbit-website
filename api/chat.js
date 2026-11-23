@@ -56,7 +56,6 @@ module.exports = async function handler(req, res) {
         })),
         system_instruction: instructions,
         generation_config: {
-          thinking_level: "minimal",
           max_output_tokens: 350
         },
         store: false
