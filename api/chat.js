@@ -64,7 +64,17 @@ module.exports = async function handler(req, res) {
     });
 
     if (!response.ok) {
-      console.error("Gemini chat request failed with status:", response.status);
+      const errorBody = await response.text();
+      let providerMessage = "";
+      try {
+        const errorResult = JSON.parse(errorBody);
+        if (typeof errorResult.error?.message === "string") {
+          providerMessage = errorResult.error.message.slice(0, 500);
+        }
+      } catch {
+        providerMessage = "Gemini returned a non-JSON error response.";
+      }
+      console.error("Gemini chat request failed with status:", response.status, providerMessage);
       if (response.status === 429) {
         return sendJson(res, 429, { error: "Bharat AI has reached its current Gemini usage limit. Please try again later." });
       }
