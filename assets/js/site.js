@@ -92,7 +92,7 @@
                   <li><a href="mailto:webthesocialorbit@gmail.com">webthesocialorbit@gmail.com</a></li>
                   <li><a href="tel:+919769973899">+91 97699 73899</a></li>
                   <li><a href="tel:+918273606310">+91 82736 06310</a></li>
-                  <li><a href="https://www.thesocialorbit.com">www.thesocialorbit.com</a></li>
+                  <li><a href="https://www.thesocialorbit.in">www.thesocialorbit.in</a></li>
                 </ul>
               </div>
             </div>
@@ -109,6 +109,276 @@
   }
 
   renderChrome();
+
+  function initOrbitChat() {
+    if (document.querySelector("[data-orbit-chat]")) return;
+
+    const chat = document.createElement("div");
+    chat.className = "orbit-chat";
+    chat.dataset.orbitChat = "";
+    chat.innerHTML = `
+      <section class="orbit-chat__panel" aria-label="Chat with Bharat AI" aria-hidden="true">
+        <header class="orbit-chat__head">
+          <div class="orbit-chat__identity">
+            <img class="orbit-chat__avatar" src="assets/images/orbit-ai-assistant.png" alt="">
+            <div>
+              <strong class="orbit-chat__name">Bharat AI</strong>
+              <span class="orbit-chat__status">Online</span>
+            </div>
+          </div>
+          <button class="orbit-chat__close" type="button" aria-label="Close chat">&times;</button>
+        </header>
+        <div class="orbit-chat__messages" aria-live="polite">
+          <p class="orbit-chat__message orbit-chat__message--bot">Hi, I’m Bharat AI. Tell me what you’re creating, and I’ll point you to the right Social Orbit service.</p>
+        </div>
+        <div class="orbit-chat__quick" aria-label="Quick questions">
+          <button type="button" data-chat-reply="I need an ad film">Ad film</button>
+          <button type="button" data-chat-reply="I need post production">Post production</button>
+          <button type="button" data-chat-reply="I need a website">Website</button>
+          <button type="button" data-chat-reply="Talk to the team">Book a call</button>
+        </div>
+        <div class="orbit-chat__lead" aria-label="Send your enquiry to our team">
+          <span>Ready to discuss your project?</span>
+          <a class="orbit-chat__lead-link" data-chat-email>Email</a>
+          <a class="orbit-chat__lead-link" data-chat-whatsapp target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        </div>
+        <form class="orbit-chat__form">
+          <span class="orbit-chat__voice-status" data-chat-voice-status aria-live="polite" hidden></span>
+          <input class="orbit-chat__input" type="text" maxlength="2000" aria-label="Type a message" placeholder="Ask Bharat AI anything..." autocomplete="off">
+          <button class="orbit-chat__voice" type="button" data-chat-voice aria-label="Ask Bharat AI by voice and hear the reply" title="Ask by voice and hear Bharat AI reply" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg>
+          </button>
+          <button class="orbit-chat__send" type="submit" aria-label="Send message">&uarr;</button>
+        </form>
+      </section>
+      <span class="orbit-chat__badge">Chat with Bharat AI</span>
+      <button class="orbit-chat__toggle" type="button" aria-label="Open Bharat AI chat" aria-expanded="false">
+        <img src="assets/images/orbit-ai-assistant.png" alt="Bharat AI assistant">
+      </button>
+    `;
+    document.body.appendChild(chat);
+
+    const panel = chat.querySelector(".orbit-chat__panel");
+    const toggle = chat.querySelector(".orbit-chat__toggle");
+    const close = chat.querySelector(".orbit-chat__close");
+    const form = chat.querySelector(".orbit-chat__form");
+    const input = chat.querySelector(".orbit-chat__input");
+    const messages = chat.querySelector(".orbit-chat__messages");
+    const emailLink = chat.querySelector("[data-chat-email]");
+    const whatsappLink = chat.querySelector("[data-chat-whatsapp]");
+    const voiceButton = chat.querySelector("[data-chat-voice]");
+    const voiceStatus = chat.querySelector("[data-chat-voice-status]");
+    const sendButton = chat.querySelector(".orbit-chat__send");
+    const conversation = [{
+      type: "Bharat AI",
+      text: "Hi, I’m Bharat AI. Tell me what you’re creating, and I’ll point you to the right Social Orbit service."
+    }];
+    let isReplying = false;
+    let isListening = false;
+    let recognition = null;
+
+    function setVoiceStatus(text) {
+      voiceStatus.textContent = text;
+      voiceStatus.hidden = !text;
+    }
+
+    function updateVoiceButton(listening) {
+      isListening = listening;
+      voiceButton.classList.toggle("is-listening", listening);
+      voiceButton.setAttribute("aria-pressed", String(listening));
+      voiceButton.setAttribute("aria-label", listening ? "Stop voice input" : "Ask Bharat AI by voice and hear the reply");
+      voiceButton.title = listening ? "Stop voice input" : "Ask by voice and hear Bharat AI reply";
+      input.placeholder = listening ? "Listening..." : "Ask Bharat AI anything...";
+    }
+
+    function speakReply(text) {
+      if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+        setVoiceStatus("Spoken replies are not supported in this browser.");
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = navigator.language || "en-IN";
+      utterance.onstart = () => setVoiceStatus("Bharat AI is speaking.");
+      utterance.onend = () => setVoiceStatus("Voice reply finished.");
+      utterance.onerror = (event) => {
+        console.error("Bharat AI speech output error:", event.error);
+        setVoiceStatus("The spoken reply could not be played.");
+      };
+      window.speechSynthesis.speak(utterance);
+    }
+
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognitionAPI) {
+      recognition = new SpeechRecognitionAPI();
+      recognition.lang = navigator.language || "en-IN";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      recognition.onstart = () => {
+        updateVoiceButton(true);
+        setVoiceStatus("Listening. Speak now.");
+      };
+      recognition.onresult = (event) => {
+        const spokenText = event.results[event.resultIndex]?.[0]?.transcript.trim();
+        if (!spokenText) {
+          setVoiceStatus("No speech was detected. Tap the microphone and try again.");
+          return;
+        }
+        setVoiceStatus("Sending your voice message...");
+        sendMessage(spokenText, true);
+      };
+      recognition.onerror = (event) => {
+        if (event.error === "aborted") return;
+        const messagesByError = {
+          "audio-capture": "No microphone was found. Connect a microphone and try again.",
+          "network": "Voice recognition could not connect. Check your connection and try again.",
+          "no-speech": "No speech was detected. Tap the microphone and try again.",
+          "not-allowed": "Microphone access was denied. Allow microphone access and try again.",
+          "service-not-allowed": "Voice recognition is unavailable. Check your browser permissions."
+        };
+        setVoiceStatus(messagesByError[event.error] || "Voice input failed. Please try again.");
+      };
+      recognition.onend = () => {
+        updateVoiceButton(false);
+        if (voiceStatus.textContent === "Listening. Speak now.") setVoiceStatus("Voice input stopped.");
+      };
+    } else {
+      voiceButton.disabled = true;
+      voiceButton.title = "Voice input is not supported in this browser.";
+      setVoiceStatus("Voice input is not supported in this browser.");
+    }
+
+    function updateLeadLinks() {
+      const transcript = conversation.slice(-12)
+        .map((message) => `${message.type}: ${message.text}`)
+        .join("\n\n");
+      const body = `${transcript}\n\nPage: ${window.location.href}`;
+      const subject = "New project enquiry via Bharat AI";
+      emailLink.href = `mailto:webthesocialorbit@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      whatsappLink.href = `https://wa.me/919769973899?text=${encodeURIComponent(`Hi Social Orbit, I'd like to discuss a project.\n\n${body}`)}`;
+    }
+
+    updateLeadLinks();
+
+    function setOpen(open) {
+      chat.classList.toggle("is-open", open);
+      panel.setAttribute("aria-hidden", String(!open));
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Close Bharat AI chat" : "Open Bharat AI chat");
+      if (!open) {
+        if (recognition && isListening) recognition.stop();
+        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      }
+      if (open) window.setTimeout(() => input.focus(), 280);
+    }
+
+    function addMessage(text, type) {
+      const message = document.createElement("p");
+      message.className = `orbit-chat__message orbit-chat__message--${type}`;
+      message.textContent = text;
+      messages.appendChild(message);
+      conversation.push({ type: type === "user" ? "Visitor" : "Bharat AI", text });
+      updateLeadLinks();
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    async function sendMessage(text, speakResponse = false) {
+      if (isReplying || !text.trim()) return;
+
+      addMessage(text.trim(), "user");
+      isReplying = true;
+      input.disabled = true;
+      sendButton.disabled = true;
+      voiceButton.disabled = true;
+      chat.querySelectorAll("[data-chat-reply]").forEach((button) => {
+        button.disabled = true;
+      });
+
+      const typing = document.createElement("p");
+      typing.className = "orbit-chat__message orbit-chat__message--bot";
+      typing.textContent = "Bharat AI is thinking...";
+      messages.appendChild(typing);
+      messages.scrollTop = messages.scrollHeight;
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: conversation.slice(-12).map((message) => ({
+              role: message.type === "Visitor" ? "user" : "assistant",
+              content: message.text
+            }))
+          })
+        });
+        const contentType = response.headers.get("content-type") || "";
+        let result;
+        if (contentType.includes("application/json")) {
+          result = await response.json();
+        } else if ([404, 405, 501].includes(response.status)) {
+          throw new Error("Live AI replies are unavailable on this static preview. Deploy the site to Vercel and add OPENAI_API_KEY in Project Settings → Environment Variables, then redeploy. You can still contact us using Email or WhatsApp.");
+        } else {
+          throw new Error("The AI service returned an unexpected response. Check the Vercel deployment and function logs, then try again.");
+        }
+        if (!response.ok) throw new Error(result.error || "Chat request failed.");
+        if (typeof result.reply !== "string" || !result.reply.trim()) {
+          throw new Error("The assistant returned an empty reply.");
+        }
+        addMessage(result.reply.trim(), "bot");
+        if (speakResponse) speakReply(result.reply.trim());
+      } catch (error) {
+        console.error("Bharat AI chat error:", error);
+        const errorMessage = error.message || "I couldn't connect just now. Please try again or contact our team by Email or WhatsApp.";
+        addMessage(errorMessage, "bot");
+        if (speakResponse) speakReply(errorMessage);
+      } finally {
+        typing.remove();
+        isReplying = false;
+        input.disabled = false;
+        sendButton.disabled = false;
+        voiceButton.disabled = !recognition;
+        chat.querySelectorAll("[data-chat-reply]").forEach((button) => {
+          button.disabled = false;
+        });
+        if (!speakResponse) input.focus();
+      }
+    }
+
+    toggle.addEventListener("click", () => setOpen(!chat.classList.contains("is-open")));
+    close.addEventListener("click", () => setOpen(false));
+
+    voiceButton.addEventListener("click", () => {
+      if (!recognition || isReplying) return;
+      if (isListening) {
+        recognition.stop();
+        return;
+      }
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      try {
+        recognition.start();
+      } catch (error) {
+        console.error("Bharat AI voice input error:", error);
+        setVoiceStatus("Voice input could not start. Check microphone permissions and try again.");
+      }
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const text = input.value;
+      if (!text.trim() || isReplying) return;
+      input.value = "";
+      sendMessage(text);
+    });
+
+    chat.querySelectorAll("[data-chat-reply]").forEach((button) => {
+      button.addEventListener("click", () => {
+        sendMessage(button.dataset.chatReply);
+      });
+    });
+
+    setOpen(false);
+  }
 
   const doc = document.documentElement;
   const body = document.body;
@@ -149,9 +419,6 @@
     let filterVersion = 0;
 
     cards.forEach((card) => {
-      if (card.classList.contains("social-image-card") && !card.dataset.socialCategory) {
-        card.dataset.socialCategory = "graphics-campaign";
-      }
       const subcategory = (card.dataset.workSubcategories || "").split(/\s+/)[0];
       const category = card.dataset.workCategory || (card.dataset.workCategories || "").split(/\s+/)[0];
       const label = categoryLabels.get(subcategory) || categoryLabels.get(category);
@@ -162,7 +429,7 @@
       card.append(badge);
     });
 
-    function applyFilter(category, subcategory = "all", socialSubcategory = "graphics-campaign") {
+    function applyFilter(category, subcategory = "all", socialSubcategory = "all-creatives") {
       const version = ++filterVersion;
       window.clearTimeout(filterTimeout);
       controls.forEach((control) => {
@@ -183,7 +450,10 @@
       if (subfilterNav) subfilterNav.hidden = category !== "films-post-production";
       if (socialSubfilterNav) socialSubfilterNav.hidden = category !== "social-media-branding";
       groups.forEach((group) => {
-        group.hidden = category !== "all" && group.dataset.workCategoryGroup !== category;
+        const groupCategory = group.dataset.workCategoryGroup;
+        group.hidden = category === "all"
+          ? groupCategory === "social-media-branding"
+          : groupCategory !== category;
       });
 
       let visibleCount = 0;
@@ -191,9 +461,11 @@
         const categories = (card.dataset.workCategories || card.dataset.workCategory || "").split(/\s+/);
         const subcategories = (card.dataset.workSubcategories || "").split(/\s+/);
         const cardSocialCategory = card.dataset.socialCategory || "";
-        const isVisible = (category === "all" || categories.includes(category))
+        const isVisible = (category === "all"
+          ? !categories.includes("social-media-branding")
+          : categories.includes(category))
           && (category !== "films-post-production" || subcategory === "all" || subcategories.includes(subcategory))
-          && (category !== "social-media-branding" || cardSocialCategory === socialSubcategory);
+          && (category !== "social-media-branding" || socialSubcategory === "all-creatives" || cardSocialCategory === socialSubcategory);
         const categoryBadge = card.querySelector(".work-project__category");
         const badgeCategory = subcategory !== "all" && subcategories.includes(subcategory)
           ? subcategory
@@ -206,9 +478,7 @@
       });
 
       if (emptyState) emptyState.hidden = visibleCount > 0 || category === "social-media-branding";
-      if (socialEmptyState) {
-        socialEmptyState.hidden = category !== "social-media-branding" || socialSubcategory !== "branding";
-      }
+      if (socialEmptyState) socialEmptyState.hidden = true;
       filterTimeout = window.setTimeout(() => {
         if (version !== filterVersion) return;
         cards.forEach((card) => {
@@ -219,10 +489,10 @@
     }
 
     controls.forEach((control) => {
-      control.addEventListener("click", () => applyFilter(control.dataset.workFilter, "all", "graphics-campaign"));
+      control.addEventListener("click", () => applyFilter(control.dataset.workFilter, "all", "all-creatives"));
     });
     subcontrols.forEach((control) => {
-      control.addEventListener("click", () => applyFilter("films-post-production", control.dataset.workSubfilter, "graphics-campaign"));
+      control.addEventListener("click", () => applyFilter("films-post-production", control.dataset.workSubfilter, "all-creatives"));
     });
     socialSubcontrols.forEach((control) => {
       control.addEventListener("click", () => applyFilter("social-media-branding", "all", control.dataset.socialSubfilter));
@@ -323,6 +593,9 @@
 
       if (card.dataset.workExternal === "true") {
         actions.append(createLink("View Project", imdbLink.href, "work-project__action"));
+        if (card.dataset.videoUrl) {
+          actions.append(createPlayerButton("Play Video", card.dataset.videoUrl, "work-project__action work-project__action--trailer"));
+        }
         if (trailerUrl) actions.append(createPlayerButton("Play Video", trailerUrl, "work-project__action work-project__action--trailer"));
         card.append(actions);
         return;
@@ -614,4 +887,5 @@
   initMagnetic();
   initEstimator();
   initContactForm();
+  initOrbitChat();
 })();
