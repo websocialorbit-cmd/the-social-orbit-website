@@ -317,9 +317,9 @@
         if (contentType.includes("application/json")) {
           result = await response.json();
         } else if ([404, 405, 501].includes(response.status)) {
-          throw new Error("Live AI replies are unavailable on this static preview. Deploy the site to Vercel and add GEMINI_API_KEY in Project Settings → Environment Variables, then redeploy. You can still contact us using Email or WhatsApp.");
+          throw new Error("Live AI replies are unavailable on this static preview. Deploy the site to Vercel and configure AI_PROVIDER_ORDER (or AI_PROVIDER), plus the selected providers’ models and API keys in Project Settings → Environment Variables, then redeploy. You can still contact us using Email or WhatsApp.");
         } else if (response.status === 429 || response.status >= 500) {
-          throw new Error("Bharat AI is temporarily unavailable. The Gemini free-tier limit may have been reached; please try again later or contact our team by Email or WhatsApp.");
+          throw new Error("Bharat AI is temporarily unavailable. The configured AI provider may have reached a usage limit or be experiencing an outage; please try again later or contact our team by Email or WhatsApp.");
         } else {
           throw new Error("The AI service returned an unexpected response. Check the Vercel deployment and function logs, then try again.");
         }
