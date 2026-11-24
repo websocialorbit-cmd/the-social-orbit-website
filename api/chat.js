@@ -243,14 +243,14 @@ module.exports = async function handler(req, res) {
       result = await response.json();
     } catch (error) {
       console.error(`${config.provider} chat response could not be parsed:`, error);
-      return sendJson(res, 503, { error: "Bharat AI couldn't produce a reply just now. Please try again or contact our team by Email or WhatsApp." });
+      continue;
     }
 
     const reply = extractReply(config.provider, result);
 
     if (!reply) {
       console.error(`${config.provider} chat response did not contain text.`);
-      return sendJson(res, 503, { error: "Bharat AI couldn't produce a reply just now. Please try again or contact our team by Email or WhatsApp." });
+      continue;
     }
 
     return sendJson(res, 200, { reply });
