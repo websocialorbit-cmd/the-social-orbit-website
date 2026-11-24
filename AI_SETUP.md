@@ -13,7 +13,7 @@ Supported providers and Vercel variables:
 
 For example, set `AI_PROVIDER_ORDER=nemotron,gemini,openai,anthropic` to use Nemotron first, then Gemini, OpenAI, and Claude. Providers without both a configured key and model are skipped. For Nemotron, use the model ID shown for your NVIDIA API/NIM account; its endpoint uses NVIDIA's OpenAI-compatible chat completions API.
 
-When multiple Nemotron key variables are set, `NVIDIA_API_KEY` takes precedence, followed by `NEMOTRON_API_KEY_2`, then `NEMOTRON_API_KEY`.
+When multiple Nemotron key variables are set, `NEMOTRON_API_KEY_2` takes precedence, followed by `NVIDIA_API_KEY`, then `NEMOTRON_API_KEY`.
 
 The next configured provider is tried after a network error, HTTP 408, HTTP 429, or an HTTP 5xx response. Other HTTP errors, including invalid-key or invalid-model errors, are returned without trying another provider so configuration problems are visible in Vercel logs. Requests sent to a fallback provider may incur that provider's usage charges.
 

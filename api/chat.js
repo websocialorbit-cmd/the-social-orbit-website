@@ -45,7 +45,7 @@ function getProviderConfig(provider) {
     case "nemotron":
       return {
         provider,
-        apiKey: process.env.NVIDIA_API_KEY || process.env.NEMOTRON_API_KEY_2 || process.env.NEMOTRON_API_KEY,
+        apiKey: process.env.NEMOTRON_API_KEY_2 || process.env.NVIDIA_API_KEY || process.env.NEMOTRON_API_KEY,
         model: process.env.NVIDIA_MODEL || process.env.NEMOTRON_MODEL,
         endpoint: "https://integrate.api.nvidia.com/v1/chat/completions"
       };
