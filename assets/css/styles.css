@@ -807,10 +807,18 @@ img {
   align-content: end;
   padding: 160px var(--gutter) 54px;
   overflow: clip;
-  background:
-    linear-gradient(180deg, rgba(3, 5, 12, .5), rgba(3, 5, 12, .94)),
-    linear-gradient(90deg, rgba(27, 32, 87, .86), rgba(3, 5, 12, .42)),
-    var(--hero-image) center/cover no-repeat;
+  background: #03050c;
+}
+
+.hero__video {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(.58) saturate(1.08);
+  pointer-events: none;
 }
 
 .hero::before {
@@ -821,11 +829,13 @@ img {
   pointer-events: none;
   opacity: .48;
   background:
+    linear-gradient(180deg, rgba(3, 5, 12, .5), rgba(3, 5, 12, .94)),
+    linear-gradient(90deg, rgba(27, 32, 87, .86), rgba(3, 5, 12, .42)),
     linear-gradient(rgba(142, 199, 255, .08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(142, 199, 255, .08) 1px, transparent 1px),
     radial-gradient(circle at 72% 36%, rgba(75, 120, 255, .34), transparent 34%),
     linear-gradient(115deg, transparent 0 58%, rgba(255, 198, 26, .12) 58% 59%, transparent 59% 100%);
-  background-size: 72px 72px, 72px 72px, 100% 100%, 100% 100%;
+  background-size: 100% 100%, 100% 100%, 72px 72px, 72px 72px, 100% 100%, 100% 100%;
   mask-image: linear-gradient(180deg, transparent, #000 16%, #000 84%, transparent);
 }
 
