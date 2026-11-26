@@ -44,9 +44,10 @@
             <a class="menu__item" href="services.html"><span class="menu__n">01</span><span class="menu__t">Services</span><span class="menu__a">&rarr;</span></a>
             <a class="menu__item" href="work.html"><span class="menu__n">02</span><span class="menu__t">Work</span><span class="menu__a">&rarr;</span></a>
             <a class="menu__item" href="process.html"><span class="menu__n">03</span><span class="menu__t">Process</span><span class="menu__a">&rarr;</span></a>
-            <a class="menu__item" href="team.html"><span class="menu__n">04</span><span class="menu__t">Team</span><span class="menu__a">&rarr;</span></a>
-            <a class="menu__item" href="clients.html"><span class="menu__n">05</span><span class="menu__t">Clients</span><span class="menu__a">&rarr;</span></a>
-            <a class="menu__item" href="contact.html"><span class="menu__n">06</span><span class="menu__t">Contact</span><span class="menu__a">&rarr;</span></a>
+            <a class="menu__item" href="calculator.html"><span class="menu__n">04</span><span class="menu__t">Estimator</span><span class="menu__a">&rarr;</span></a>
+            <a class="menu__item" href="team.html"><span class="menu__n">05</span><span class="menu__t">Team</span><span class="menu__a">&rarr;</span></a>
+            <a class="menu__item" href="clients.html"><span class="menu__n">06</span><span class="menu__t">Clients</span><span class="menu__a">&rarr;</span></a>
+            <a class="menu__item" href="contact.html"><span class="menu__n">07</span><span class="menu__t">Contact</span><span class="menu__a">&rarr;</span></a>
           </nav>
           <div class="menu__foot">
             <span>Mumbai | Dubai</span>
